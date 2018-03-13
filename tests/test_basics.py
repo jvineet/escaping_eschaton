@@ -127,6 +127,15 @@ class SetupBasicTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 utils.check_asteroid(asteroid, 10)
 
+        with patch.dict(asteroid):
+            asteroid.pop('t_per_asteroid_cycle')
+            with self.assertRaises(ValueError):
+                utils.check_asteroid(asteroid, 10)
+
+        with patch.dict(asteroid):
+            asteroid.pop('offset')
+            with self.assertRaises(ValueError):
+                utils.check_asteroid(asteroid, 10)
 
     @classmethod
     def tearDownClass(cls):

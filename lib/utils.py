@@ -32,7 +32,17 @@ def load_json_chart(chartfile):
 
 def check_asteroid(asteroid, ind):
     """
+    Inputs:
+        asteroids: dict containing asteroid speed and offset
+        ind = pos where the asteroid can be found
+
+    Outputs: Raises Value error if the asteroid dict is not in the 
+             right format, None otherwise.
+
     """
+    if asteroid is None:
+        raise ValueError("Asteroid at {} can't be NoneType".format(ind))
+
     cycle_time = asteroid.get('t_per_asteroid_cycle')
     offset = asteroid.get('offset')
     if not cycle_time or not isinstance(cycle_time, int):
@@ -45,6 +55,14 @@ def check_asteroid(asteroid, ind):
 
 def death_by_blast(blast_time_step, t, p):
     """
+        Inputs:
+            blast_time_step: time taken by plast to travel between two positions
+            t: current time
+            p: current position
+
+        Returns:
+            True, if current position will be consumed from blast at current time,
+            Fasle otherwise
     """
     if not blast_time_step:
         return False
@@ -55,6 +73,13 @@ def death_by_blast(blast_time_step, t, p):
 
 def death_by_asteroid(asteroid, t):
     """
+        Inputs:
+            asteroids: dict containing asteroid speed and offset
+            t: current time
+
+        Returns: 
+            True, if ship will collide with the asteroid in current position 
+            at current time, Fasle otherwise
     """
     cycle_time = asteroid['t_per_asteroid_cycle']
     offset = asteroid['offset']
@@ -65,6 +90,13 @@ def death_by_asteroid(asteroid, t):
 
 def get_nxt_state(state, blast_time_step, asteroids):
     """
+        Inputs:
+            state: current state of the ship
+            blast_time_step: time taken by plast to travel between positions
+            asteroids: dict containing asteroid speed and offset
+
+        Returns: All next states the ship can go to from the current state
+                 withou being destroyed.
     """
     acc = [-1, 0 ,1]
     p, v, t = state
