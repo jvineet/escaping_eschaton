@@ -2,7 +2,7 @@
 
 import unittest
 import logging
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import os
 import sys
 
@@ -23,21 +23,17 @@ class SetupBasicTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.console = logging.StreamHandler(sys.stdout)
-        cls.console.setLevel(logging.INFO)
-        # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        # cls.console.setFormatter(formatter)        
+        cls.console.setLevel(logging.INFO)    
         logger.addHandler(cls.console)
 
-        logger.info('Running unit tests ..')
+        logger.info('Running unit tests for utils ..')
         cls.json_chart = os.path.join(SRCPATH, 'tests', 'inputs', 'chart.json')
 
 
-    # @patch('psycopg2.connect')
     def test_load_json_chart(self):
         """
             Testing the json chart loading routine
         """
-        # logger.info('\nTesting json Chart loading..')
         blast_velocity, asteroids = utils.load_json_chart(SetupBasicTests.json_chart)
         self.assertEqual(blast_velocity, 10)
         self.assertEqual(len(asteroids), 4)
@@ -49,7 +45,6 @@ class SetupBasicTests(unittest.TestCase):
         """
             Testing the death_by_blast function 
         """
-        # logger.info('\nTesting Death by Blast ..')
         self.assertFalse(utils.death_by_blast(10, 9, 0), 
             "position consumed by blast a second before it should")
         self.assertTrue(utils.death_by_blast(10, 10, 0),
@@ -62,8 +57,10 @@ class SetupBasicTests(unittest.TestCase):
             "p=0 not safe at t=0 at max blast velocity")
         self.assertTrue(utils.death_by_blast(1, 1, 0),
             "p=0 not consumed by blast at t=1 at max blast velocity")
-        self.assertFalse(utils.death_by_blast(0, 10000, 0),
-            "p=0 should never be consumed by blast at 0 blast velocity")        
+        
+        with self.assertRaises(ZeroDivisionError):
+            self.assertFalse(utils.death_by_blast(0, 10000, 0),
+            "blast velocity can not be 0")      
     
     def test_death_by_asteroid(self):
         """
@@ -71,7 +68,6 @@ class SetupBasicTests(unittest.TestCase):
         """
         asteroid = {"t_per_asteroid_cycle": 4, "offset": 2} 
 
-        # logger.info('\nTesting Death by Asteroid ..')
         logger.info('\nCycle Time: {0}, Offset: {1}'.format(asteroid['t_per_asteroid_cycle'],
             asteroid['offset']))
         self.assertTrue(utils.death_by_asteroid(asteroid, 10),
@@ -107,7 +103,6 @@ class SetupBasicTests(unittest.TestCase):
             self.assertTrue(utils.death_by_asteroid(asteroid, 6),
                 "Spacship should always collide with asteriod with cycle time 1")
 
-
     def test_check_asteroid(self):
         """
             Testing the check_asteroid function
@@ -136,6 +131,30 @@ class SetupBasicTests(unittest.TestCase):
             asteroid.pop('offset')
             with self.assertRaises(ValueError):
                 utils.check_asteroid(asteroid, 10)
+
+    
+    def test_get_nxt_states(self):
+        """
+            Testing the get_nxt_states function
+        """
+        asteroid = {"t_per_asteroid_cycle": 1, "offset":0}
+        asteroids = [asteroid]*5
+        
+        state = (0,0,1)
+        nxt_states = []
+        blast_time_step = 10
+        for a, state in utils.get_nxt_states(state, blast_time_step, asteroids):
+            nxt_states.append(state)
+        self.assertEqual(nxt_states, [(0,0,2)])
+
+        # test edge case when no next state possible
+        state = (0,0,9)
+        nxt_states = []
+        blast_time_step = 10
+        for a, state in utils.get_nxt_states(state, blast_time_step, asteroids):
+            nxt_states.append(state)
+        self.assertEqual(nxt_states, [])
+
 
     @classmethod
     def tearDownClass(cls):

@@ -14,15 +14,15 @@ def load_json_chart(chartfile):
             asteroid location at t=0.
 
         Returns:
-            asteroids:
-            blast_time_step:
+            asteroids: dict containing asteroid speed and offset
+            blast_time_step: time taken by plast to travel between two positions
     """
     with open(chartfile) as json_data:
         state = json.load(json_data)
 
     blast_time_step = state["t_per_blast_move"]
-    if not isinstance(blast_time_step, int):
-        ValueError('Blast time step must be an Integer')
+    if not isinstance(blast_time_step, int) or blast_time_step == 0:
+        ValueError('Blast time step must be an Integer greater than 0')
 
     asteroids = state["asteroids"]
     for i, asteroid in enumerate(asteroids, 1):
@@ -57,6 +57,7 @@ def death_by_blast(blast_time_step, t, p):
     """
         Inputs:
             blast_time_step: time taken by plast to travel between two positions
+                             (assumes > 0)
             t: current time
             p: current position
 
@@ -64,8 +65,6 @@ def death_by_blast(blast_time_step, t, p):
             True, if current position will be consumed from blast at current time,
             Fasle otherwise
     """
-    if not blast_time_step:
-        return False
     if t // blast_time_step - 1 >= p:
         return True
     return False
@@ -74,7 +73,8 @@ def death_by_blast(blast_time_step, t, p):
 def death_by_asteroid(asteroid, t):
     """
         Inputs:
-            asteroids: dict containing asteroid speed and offset
+            asteroids: dict containing asteroid speed and offset 
+                       (assumes asteroid speed and offset are present and valid)
             t: current time
 
         Returns: 
@@ -88,7 +88,7 @@ def death_by_asteroid(asteroid, t):
     return False
 
 
-def get_nxt_state(state, blast_time_step, asteroids):
+def get_nxt_states(state, blast_time_step, asteroids):
     """
         Inputs:
             state: current state of the ship
@@ -116,7 +116,7 @@ def get_nxt_state(state, blast_time_step, asteroids):
         if 0 < next_p <= len(asteroids) and death_by_asteroid(asteroids[next_p - 1], next_t):
             continue
 
-        yield next_a, (next_p, next_v, next_t)        
+        yield next_a, (next_p, next_v, next_t)   
 
 
 

@@ -2,6 +2,7 @@ import sys
 import os
 import logging
 import argparse
+import shutil
 from lib import utils
 
 CURVERSION = "0.1"
@@ -68,10 +69,48 @@ def solve(args):
         state_stack.append((curr_a, True, curr_state))
 
         # add all valid downstream states from here (continue DFS)
-        for next_a, next_state in utils.get_nxt_state(curr_state, blast_time_step, asteroids):
+        for next_a, next_state in utils.get_nxt_states(curr_state, blast_time_step, asteroids):
             state_stack.append((next_a, False, next_state))
 
     return best_course[1:]
+
+def setup(args):
+    """
+        Staging area that sets out output folder and logging infoormation
+        and then class the 'solve' routine
+        Input: Object with Input arguements
+        Returns: None
+    """
+    output_folder = args.output_folder
+
+    if os.path.exists(output_folder) and args.xforce:
+        shutil.rmtree(output_folder)
+        os.makedirs(output_folder)
+    elif not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    else:
+        print("Output Path already exists.") 
+        print("Please use the -x option to overwrite existing path")
+        exit(0)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    console.setFormatter(formatter)
+    logger.addHandler(console)
+
+    filelog_path = os.path.join(output_folder, args.log)
+    filelog = logging.FileHandler(filelog_path, mode="w")
+    filelog.setFormatter(formatter)
+    logger.addHandler(filelog)
+
+    logger.info('Logging enabled')
+    logger.info('Created Output Folder: {}'.format(args.output_folder))
+    res = solve(args)
+    print(res)
 
     
 def main(argstr=None):
@@ -79,7 +118,11 @@ def main(argstr=None):
     parser.add_argument('chart', help="json file containing state chart for blast velocity and asteroids around Eschaton")
     parser.add_argument("-c", "--config", dest="config", default="", nargs="?",\
         help="configuration file genotype")
-    parser.add_argument("-l", "--log", dest="log", default="escapeing_eschaton", nargs="?", \
+    parser.add_argument("-o", "--output-folder", dest="output_folder", default='escape_result',
+        help="Output folder for results json and logs")
+    parser.add_argument("-x", "--xforce", dest="xforce", action="store_true", \
+        help="force overwrite the output, if the folder already exists")
+    parser.add_argument("-l", "--log", dest="log", default="escapeing_eschaton.log", nargs="?", \
         help="log to file (Default: escapeing_eschaton.log)")
     parser.add_argument("-v", "--version", action="version", version="Escapeing Eschaton Current version {0}".format(CURVERSION))
 
@@ -88,8 +131,8 @@ def main(argstr=None):
     else:
         args = parser.parse_args()
         
-    return solve(args)
+    return setup(args)
 
 
 if __name__ == '__main__':
-    print(main())
+    main()
