@@ -4,7 +4,7 @@ The problem was solved using a DFS search on states with backtracking. A state i
 
 The DFS state traversal here is implemented iteratively since functions in python have a high overhead that can can cause stack overflow if the recursion depth goes too high. Python also caps recursion to a depth of 1000, which can be increased but still doesn't address the problem of stack overflow with recursion in Python.
 
-The optimal route for escape is stored as a json file in a specified output folder (default folder 'escape_result' is created inside the path where the executible is run, if no output path is supplied)
+The optimal route for escape is stored as a json file 'course.json' in a specified output folder (default folder 'escape_result' is created inside the path where the executible is run, if no output path is supplied)
 
 To Run:
     $ ./escape_eschaton.py <chart.json> [optional args] 

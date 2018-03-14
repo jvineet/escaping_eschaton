@@ -136,11 +136,11 @@ def setup(args):
     logger.info('Optimal path:' )
     logger.info(res)
 
-    output_chart = os.path.join(output_folder, "chart.json")
-    with open(output_chart, 'w') as outfile:
+    output_course = os.path.join(output_folder, "course.json")
+    with open(output_course, 'w') as outfile:
         json.dump(res, outfile)
 
-    logger.info("Successfully written optimal path to output chart json")
+    logger.info("Successfully written optimal path to output course.json")
 
     
 def main(argstr=None):
