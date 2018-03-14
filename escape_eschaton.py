@@ -3,6 +3,7 @@ import os
 import logging
 import argparse
 import shutil
+import json
 from lib import utils
 
 CURVERSION = "0.1"
@@ -22,13 +23,19 @@ def usage():
 def solve(args):
     """
         state (p,v,t)
-        pv_state (p,v)
+        Input:
+            args:
+
+        Returns:
+            Optimal Escape Path: List of ints as acceleration values for 
+            each time t.
     """
     blast_time_step, asteroids = utils.load_json_chart(args.chart)
 
     state_stack = []
     course_sofar = []
-    exhausted_states = {}
+    exhausted_states = set([])
+    # exhausted_states = {}
     initial_state = (0,0,0)
     state_stack.append((None, False, initial_state))    
     best_course = []
@@ -36,18 +43,15 @@ def solve(args):
     # perform an iterative DFS on the state space to find the optimal solution
     while state_stack != []:
         curr_a, exhausted, curr_state = state_stack.pop()
-        pv_state = curr_state[:-1]
-        curr_t = curr_state[-1]
 
         # store exhausted state to prune and backtrack on the search space later
         if exhausted:
-            exhausted_states[pv_state] = curr_t
+            exhausted_states.add(curr_state)
             course_sofar.pop()
             continue
         
-        # backtrack if current pv_state was already exhausted at time less than 
-        # or equal to the current time
-        if pv_state in exhausted_states and exhausted_states[pv_state] <= curr_t:
+        # backtrack if current state was already exhausted
+        if curr_state in exhausted_states:
             continue
         
         # backtrack if current solution is already longer than best solution so far
@@ -57,7 +61,7 @@ def solve(args):
         course_sofar.append(curr_a)
 
         # escape condition
-        if curr_state[0] > len(asteroids):
+        if curr_state[0] >= len(asteroids):
             # if current course is shorter than best course so far, make it best course
             if not best_course or len(course_sofar) < len(best_course):
                 best_course = course_sofar.copy()
@@ -73,6 +77,7 @@ def solve(args):
             state_stack.append((next_a, False, next_state))
 
     return best_course[1:]
+
 
 def setup(args):
     """
@@ -109,8 +114,17 @@ def setup(args):
 
     logger.info('Logging enabled')
     logger.info('Created Output Folder: {}'.format(args.output_folder))
-    res = solve(args)
-    print(res)
+
+    logger.info('Evaluating Optimal Path')
+    res = solve(args)    
+    logger.info('Optimal path:' )
+    logger.info(res)
+
+    output_chart = os.path.join(output_folder, "chart.json")
+    with open(output_chart, 'w') as outfile:
+        json.dump(res, outfile)
+
+    logger.info("Successfully written optimal path to output chart json")
 
     
 def main(argstr=None):
@@ -122,8 +136,8 @@ def main(argstr=None):
         help="Output folder for results json and logs")
     parser.add_argument("-x", "--xforce", dest="xforce", action="store_true", \
         help="force overwrite the output, if the folder already exists")
-    parser.add_argument("-l", "--log", dest="log", default="escapeing_eschaton.log", nargs="?", \
-        help="log to file (Default: escapeing_eschaton.log)")
+    parser.add_argument("-l", "--log", dest="log", default="escape_eschaton.log", nargs="?", \
+        help="log to file (Default: escape_eschaton.log)")
     parser.add_argument("-v", "--version", action="version", version="Escapeing Eschaton Current version {0}".format(CURVERSION))
 
     if argstr:

@@ -27,7 +27,7 @@ class SetupBasicTests(unittest.TestCase):
         logger.addHandler(cls.console)
 
         logger.info('Running unit tests for utils ..')
-        cls.json_chart = os.path.join(SRCPATH, 'tests', 'inputs', 'chart.json')
+        cls.json_chart = os.path.join(SRCPATH, 'tests', 'inputs', 'chart_test1.json')
 
 
     def test_load_json_chart(self):

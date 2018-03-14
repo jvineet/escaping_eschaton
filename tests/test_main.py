@@ -27,7 +27,9 @@ class SetupBasicTests(unittest.TestCase):
         logger.addHandler(cls.console)
 
         logger.info('Running unit tests for main routine ..')
-        cls.json_chart = os.path.join(SRCPATH, 'tests', 'inputs', 'chart.json')
+        cls.json_chart1 = os.path.join(SRCPATH, 'tests', 'inputs', 'chart_test1.json')
+        cls.json_chart2 = os.path.join(SRCPATH, 'tests', 'inputs', 'chart_test2.json')
+        cls.json_chart3 = os.path.join(SRCPATH, 'tests', 'inputs', 'chart_test3.json')
 
 
     def test_solve(self):
@@ -35,9 +37,15 @@ class SetupBasicTests(unittest.TestCase):
             Testing the routine that solves fpr the optimal escape path
         """
         mock_args = MagicMock()
-        mock_args.chart = SetupBasicTests.json_chart
-        mock_args.log = "escapeing_eschaton.log"     
-        self.assertEqual(escape.solve(mock_args), [1,1,1])    
+        mock_args.chart = SetupBasicTests.json_chart1
+        self.assertEqual(escape.solve(mock_args), [1,1,1])
+
+        mock_args.chart = SetupBasicTests.json_chart2
+        self.assertEqual(escape.solve(mock_args), [0,1,1,1,1])
+
+        # testing for edge case when ther is no escape path
+        mock_args.chart = SetupBasicTests.json_chart3
+        self.assertEqual(escape.solve(mock_args), [])    
         
 
     @classmethod

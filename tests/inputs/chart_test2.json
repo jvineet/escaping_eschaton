@@ -1,0 +1,45 @@
+{
+    "asteroids": [
+        {
+            "t_per_asteroid_cycle": 1000, 
+            "offset": 1
+        }, 
+        {
+            "t_per_asteroid_cycle": 1, 
+            "offset": 0
+        }, 
+        {
+            "t_per_asteroid_cycle": 2, 
+            "offset": 0
+        }, 
+        {
+            "t_per_asteroid_cycle": 1, 
+            "offset": 0
+        }, 
+        {
+            "t_per_asteroid_cycle": 1, 
+            "offset": 0
+        }, 
+        {
+            "t_per_asteroid_cycle": 2, 
+            "offset": 1
+        }, 
+        {
+            "t_per_asteroid_cycle": 3, 
+            "offset": 0
+        }, 
+        {
+            "t_per_asteroid_cycle": 1, 
+            "offset": 0
+        }, 
+        {
+            "t_per_asteroid_cycle": 1, 
+            "offset": 0
+        }, 
+        {
+            "t_per_asteroid_cycle": 2, 
+            "offset": 0
+        }
+    ], 
+    "t_per_blast_move": 2
+}
