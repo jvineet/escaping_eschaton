@@ -1,5 +1,3 @@
-#!/usr/bin/env python3.5
-
 import unittest
 import logging
 from unittest.mock import patch
@@ -22,7 +20,7 @@ class SetupBasicTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.console = logging.StreamHandler(sys.stdout)
+        cls.console = logging.StreamHandler()
         cls.console.setLevel(logging.INFO)    
         logger.addHandler(cls.console)
 
@@ -109,6 +107,7 @@ class SetupBasicTests(unittest.TestCase):
         """
         asteroid = {"t_per_asteroid_cycle": 3, "offset": 2} 
         self.assertEqual(utils.check_asteroid(asteroid, 1), None)
+        logger.info('')
 
         with patch.dict(asteroid, offset="temp"):
             with self.assertRaises(ValueError):

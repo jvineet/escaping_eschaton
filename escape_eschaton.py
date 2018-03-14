@@ -1,4 +1,9 @@
-import sys
+#!/usr/bin/env python
+
+"""
+    Main executable for the finding the optimal escape path
+"""
+
 import os
 import logging
 import argparse
@@ -7,7 +12,6 @@ import json
 from lib import utils
 
 CURVERSION = "0.1"
-SRCPATH = os.path.dirname(os.path.realpath(__file__))
 
 def usage():
     buf = '''
@@ -15,27 +19,39 @@ def usage():
     the gaps in the asteroids and exiting the asteroid belt.
 
     Run:
-        $ python<3.x> escapeing_eschaton.py <chart.json> [optional args]
+        $ ./escape_eschaton.py <chart.json> [optional args] 
+        or 
+        $ python<3.x> escape_eschaton.py <chart.json> [optional args]
         '''
     return buf
 
 
 def solve(args):
     """
-        state (p,v,t)
+        State: (p,v,t)
+            p: position
+            v: velocity
+            t: time instance
+            
+        State Stack stores a tuple with:
+            1. acceleration value at a state,
+            2. flag to mark if a state was complete
+            3. the state tuple
+            eg (1, False, (p,v,t))
+
         Input:
-            args:
+            args: input arguments supplied to the executable that contains
+                  json file location that holds the state chart.
 
         Returns:
-            Optimal Escape Path: List of ints as acceleration values for 
-            each time t.
+            Optimal Escape Path: List of int as acceleration values for 
+            each time period.
     """
     blast_time_step, asteroids = utils.load_json_chart(args.chart)
 
     state_stack = []
     course_sofar = []
     exhausted_states = set([])
-    # exhausted_states = {}
     initial_state = (0,0,0)
     state_stack.append((None, False, initial_state))    
     best_course = []
@@ -68,7 +84,7 @@ def solve(args):
             course_sofar.pop()
             continue
         
-        # add state back to stack with exhaused flag True. When it is popped again, 
+        # add state back to stack with exhaused flag as True. When it is popped again, 
         # we will know all states downstream from here were exhausted
         state_stack.append((curr_a, True, curr_state))
 
@@ -95,7 +111,7 @@ def setup(args):
         os.makedirs(output_folder)
     else:
         print("Output Path already exists.") 
-        print("Please use the -x option to overwrite existing path")
+        print("Please use the -x option to overwrite in the existing path")
         exit(0)
 
     logger = logging.getLogger()
@@ -130,8 +146,6 @@ def setup(args):
 def main(argstr=None):
     parser = argparse.ArgumentParser(description='Input Parameters', usage=usage())
     parser.add_argument('chart', help="json file containing state chart for blast velocity and asteroids around Eschaton")
-    parser.add_argument("-c", "--config", dest="config", default="", nargs="?",\
-        help="configuration file genotype")
     parser.add_argument("-o", "--output-folder", dest="output_folder", default='escape_result',
         help="Output folder for results json and logs")
     parser.add_argument("-x", "--xforce", dest="xforce", action="store_true", \

@@ -22,7 +22,7 @@ class SetupBasicTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.console = logging.StreamHandler(sys.stdout)
+        cls.console = logging.StreamHandler()
         cls.console.setLevel(logging.INFO)     
         logger.addHandler(cls.console)
 

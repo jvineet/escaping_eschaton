@@ -1,5 +1,7 @@
-import sys
-import os
+"""
+    Utility module containing helper routines to solve for optimal path
+"""
+
 import json
 import logging
 
@@ -22,7 +24,9 @@ def load_json_chart(chartfile):
 
     blast_time_step = state["t_per_blast_move"]
     if not isinstance(blast_time_step, int) or blast_time_step == 0:
-        ValueError('Blast time step must be an Integer greater than 0')
+        buf = 'Blast time step must be an Integer greater than 0'
+        logger.error(buf)
+        ValueError(buf)
 
     asteroids = state["asteroids"]
     for i, asteroid in enumerate(asteroids, 1):
@@ -41,15 +45,20 @@ def check_asteroid(asteroid, ind):
 
     """
     if asteroid is None:
-        raise ValueError("Asteroid at {} can't be NoneType".format(ind))
+        buf = "Asteroid at {} can't be NoneType".format(ind)
+        logger.error(buf)
+        ValueError(buf)
 
     cycle_time = asteroid.get('t_per_asteroid_cycle')
     offset = asteroid.get('offset')
     if not cycle_time or not isinstance(cycle_time, int):
         buf = "Asteroid Cycle Time must be present and has an integer value > 0 for asteroid at p={0}"
+        logger.error(buf.format(ind))
         raise ValueError(buf.format(ind))
+
     if offset is None or not isinstance(offset, int):
-        buf = "Asteroid Cycle Offset must be present for and have an integer value at p={0}"
+        buf = "Asteroid Cycle Offset must be present and have an integer value at p={0}"
+        logger.error(buf.format(ind))
         raise ValueError(buf.format(ind))
 
 

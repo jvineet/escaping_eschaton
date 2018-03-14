@@ -1,5 +1,0 @@
-
-Python>=3.5
-
-Python modules:
-setuptools

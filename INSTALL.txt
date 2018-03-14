@@ -1,0 +1,20 @@
+Requirements for Installation:
+
+    Python>=3.5
+
+    Python modules:
+    argparse (usually ships with the default distribution for python 3.5 or higher)
+
+To install locally:
+
+    $ python<3.x> setup.py install --prefix=<install path>
+
+    eg.
+    $ python3.5 setup.py install --prefix=/home/vineet/escape
+
+    This will install all the packages and data files inside /home/vineet/escape/
+
+    ls /home/vineet/escape/
+    docs  escape_eschaton-0.1-py3.5.egg-info  escape_eschaton.py  escape_result  lib  README.md
+
+setup.py first runs the unit tests and if all unit tests pass, it then proceeds to install the utility in the install path
