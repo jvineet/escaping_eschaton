@@ -7,6 +7,7 @@ The DFS state traversal here is implemented iteratively since functions in pytho
 The optimal route for escape is stored as a json file in a specified output folder (default folder 'escape_result' is created inside the path where the executible is run, if no output path is supplied)
 
 To Run:
+
     $ ./escape_eschaton.py <chart.json> [optional args] 
         or 
     $ python<3.x> escape_eschaton.py <chart.json> [optional args] 
